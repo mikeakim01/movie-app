@@ -6,7 +6,7 @@ import bcrypt
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
 db = client.cluster1  # Database
 users_collection = db.users  # Users collection
-movies_collection = cluster1.movies  # Movies collection
+movies_collection = client.cluster1.movies  # Movies collection
 
 # User Authentication Functions
 def hash_password(password):
