@@ -78,14 +78,23 @@ def main_app():
     # Fetch and display movies from MongoDB
     st.subheader("Featured Movies")
     
-    movies = movies_collection.find()  # Fetch all movies from the collection
-    
-    # Display each movie
-    for movie in movies:
-        st.write(f"**Title:** {movie['title']}")
-        st.write(f"**Description:** {movie['description']}")
-        st.write(f"**Release Year:** {movie['release_year']}")
-        st.write("---")  # Separator between movies
+    # Fetch all movies from the collection
+    try:
+        movies = movies_collection.find()  
+        
+        # Check if movies are present
+        if movies.count() == 0:
+            st.write("No movies found in the database.")
+        else:
+            # Display each movie
+            for movie in movies:
+                st.write(f"**Title:** {movie['title']}")
+                st.write(f"**Description:** {movie['description']}")
+                st.write(f"**Release Year:** {movie['release_year']}")
+                st.write("---")  # Separator between movies
+                
+    except Exception as e:
+        st.error(f"Error fetching movies: {e}")
 
 # Run the App Logic
 if __name__ == "__main__":
