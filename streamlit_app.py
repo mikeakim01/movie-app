@@ -97,10 +97,9 @@ def main_app():
             for movie in movies:
                 st.write(f"**Title:** {movie['title']}")
                 st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
-                st.write(f"**Description:** {movie['description']}")
                 st.write(f"**Genre:** {movie['genre']}")
                 st.write(f"**Duration:** {movie['duration']}")
-                st.video(movie['videoUrl'])  # Display movie video
+               
                 
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
