@@ -93,13 +93,14 @@ def main_app():
         if not movies:
             st.write("No movies found in the database.")
         else:
-            # Display each movie
-            for movie in movies:
-                st.write(f"**Title:** {movie['title']}")
-                st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
-                st.write(f"**Genre:** {movie['genre']}")
-                st.write(f"**Duration:** {movie['duration']}")
-               
+            # Create columns for movie tiles
+            cols = st.columns(3)  # Adjust the number of columns as needed
+            
+            for i, movie in enumerate(movies):
+                with cols[i % 3]:  # Display movie in the appropriate column
+                    st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
+                    st.write(f"**Title:** {movie['title']}")           
+                    
                 
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
