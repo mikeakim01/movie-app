@@ -80,10 +80,10 @@ def main_app():
     
     # Fetch all movies from the collection
     try:
-        movies = movies_collection.find()  
+        movies = list(movies_collection.find())  # Convert the cursor to a list
         
         # Check if movies are present
-        if movies.count() == 0:
+        if not movies:
             st.write("No movies found in the database.")
         else:
             # Display each movie
