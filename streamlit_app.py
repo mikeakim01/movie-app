@@ -35,11 +35,11 @@ if "logged_in" not in st.session_state:
 
 # Login / Registration Screen
 def login_page():
-    st.title("Spotflix Login")
+    st.title("Bongoflix Login")
     choice = st.sidebar.selectbox("Login or Register", ["Login", "Register"])
     
     if choice == "Login":
-        st.subheader("Login to Spotflix")
+        st.subheader("Login to Bongoflix")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         
@@ -52,7 +52,7 @@ def login_page():
                 st.error("Invalid username or password")
 
     elif choice == "Register":
-        st.subheader("Register for Spotflix")
+        st.subheader("Register for Bongoflix")
         username = st.text_input("Choose a Username")
         password = st.text_input("Choose a Password", type="password")
         if st.button("Register"):
@@ -61,7 +61,7 @@ def login_page():
 
 # Main App Content (Only for Logged-in Users)
 def main_app():
-    st.title("Welcome to Spotflix")
+    st.title("Welcome to Bongoflix")
     st.write("Enjoy the best movie streaming experience.")
 
     # Sample content (You can enhance with MongoDB movie collection)
