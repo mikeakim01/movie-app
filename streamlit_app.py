@@ -34,49 +34,39 @@ def register_user(username, password, email, phone):
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-# Login / Registration Screen
 def login_page():
     st.title("Bongoflix Login")
+    choice = st.sidebar.selectbox("Login or Register", ["Login", "Register"])
     
-    col1, col2 = st.columns(2)  # Create two columns for buttons
+    if choice == "Login":
+        st.subheader("Login to Bongoflix")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        
+        # Add a unique key to the Login button
+        if st.button("Login", key="login_button"):
+            if authenticate_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success(f"Welcome {username}!")
+            else:
+                st.error("Invalid username or password")
 
-    with col1:
-        if st.button("Login"):
-            st.session_state.login_mode = "login"  # Set the mode to login
-
-    with col2:
-        if st.button("Register"):
-            st.session_state.login_mode = "register"  # Set the mode to register
-
-    # Conditional rendering based on selected mode
-    if "login_mode" in st.session_state:
-        if st.session_state.login_mode == "login":
-            st.subheader("Login to Bongoflix")
-            username = st.text_input("Username")
-            password = st.text_input("Password", type="password")
-            
-            if st.button("Login"):
-                if authenticate_user(username, password):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success(f"Welcome {username}!")
-                else:
-                    st.error("Invalid username or password")
-
-        elif st.session_state.login_mode == "register":
-            st.subheader("Register for Bongoflix")
-            username = st.text_input("Choose a Username")
-            email = st.text_input("Email")
-            phone = st.text_input("Phone Number")
-            password = st.text_input("Choose a Password", type="password")
-            confirm_password = st.text_input("Re-enter Password", type="password")
-            
-            if st.button("Register"):
-                if password != confirm_password:
-                    st.warning("Passwords do not match!")
-                else:
-                    if register_user(username, password, email, phone):
-                        st.success("Registration successful! Please login.")
+    elif choice == "Register":
+        st.subheader("Register for Bongoflix")
+        username = st.text_input("Choose a Username")
+        email = st.text_input("Email")
+        phone = st.text_input("Phone Number")
+        password = st.text_input("Choose a Password", type="password")
+        confirm_password = st.text_input("Re-enter Password", type="password")
+        
+        # Add a unique key to the Register button
+        if st.button("Register", key="register_button"):
+            if password != confirm_password:
+                st.warning("Passwords do not match!")
+            else:
+                if register_user(username, password, email, phone):
+                    st.success("Registration successful! Please login.")
 
 # Main App Content (Only for Logged-in Users)
 def main_app():
