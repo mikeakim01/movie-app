@@ -6,7 +6,7 @@ import bcrypt
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
 db = client.cluster1  # Database
 users_collection = db.users  # Users collection
-movies_collection = client.cluster1.movies  # Movies collection
+movies_collection = db.movies  # Movies collection
 
 # User Authentication Functions
 def hash_password(password):
@@ -89,12 +89,6 @@ def main_app():
             # Display each movie
             for movie in movies:
                 st.write(f"**Title:** {movie['title']}")
-                st.write(f"**Description:** {movie['description']}")
-                st.write(f"**Genre:** {movie['genre']}")
-                st.write(f"**Duration:** {movie['duration']}")
-                st.image(movie['thumbnailUrl'], caption=movie['title'])
-                st.video(movie['videoUrl'])  # Display video
-                st.write("---")  # Separator between movies
                 
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
