@@ -75,8 +75,42 @@ def main_app():
         st.session_state.username = None
         st.success("Logged out successfully")
 
+
+# Background Video Styling using HTML
+def set_background_video():
+    video_html = """
+    <style>
+    .stApp {
+        background: transparent;
+    }
+    video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        filter: brightness(50%);
+        pointer-events: none;  /* Disable video interaction */
+    }
+    body {
+        -webkit-user-select: none;  /* Disable text selection */
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    </style>
+    <video autoplay muted loop playsinline>
+        <source src="hero.mp4" type="video/mp4">
+    </video>
+    """
+    st.markdown(video_html, unsafe_allow_html=True)
+
 # Run the App Logic
-if st.session_state.logged_in:
-    main_app()
-else:
-    login_page()
+if __name__ == "__main__":
+    set_background_video()  # Set the video background
+    if st.session_state.logged_in:
+        main_app()
+    else:
+        login_page()
