@@ -4,7 +4,7 @@ import bcrypt
 
 # MongoDB setup (replace <password> and <dbname> with your credentials)
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
-db = client.movie_app  # Database
+db = client.cluster1  # Database
 users_collection = db.users  # Users collection
 
 # User Authentication Function
