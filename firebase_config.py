@@ -2,10 +2,11 @@ import firebase_admin
 from firebase_admin import credentials, auth
 import pyrebase
 
-# Load Firebase credentials
-cred = credentials.Certificate("credentials.json")
-firebase_admin.initialize_app(cred)
-
+# Check if the Firebase app is already initialized
+if not firebase_admin._apps:
+    cred = credentials.Certificate("credentials.json")
+    firebase_admin.initialize_app(cred)
+    
 # Pyrebase configuration
 firebase_config = {
     "type": "service_account",
