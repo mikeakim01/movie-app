@@ -1,0 +1,51 @@
+/* Global Styling */
+body {
+    background-color: #000000; /* Primary black background */
+    color: white; /* Default text color */
+}
+
+/* Header Titles */
+h1, h2, h3 {
+    color: #ff1a1a; /* Secondary red color */
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Input Fields */
+input {
+    background-color: #1a1a1a; /* Darker input background */
+    color: white;
+    border: 1px solid #ff1a1a; /* Red border */
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+/* Buttons */
+button {
+    background-color: #ff1a1a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e60000; /* Darker red on hover */
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #1a1a1a; /* Dark sidebar */
+}
+
+button.sidebar-button {
+    background-color: #ff1a1a; /* Red buttons in sidebar */
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+button.sidebar-button:hover {
+    background-color: #e60000;
+}
