@@ -3,10 +3,10 @@ from pymongo import MongoClient
 import bcrypt
 
 # MongoDB setup (replace <password> and <dbname> with your credentials)
-client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
-db = client.cluster1  # Database
+client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster0.ylyymur.mongodb.net/cluster0")
+db = client.cluster0  # Database
 users_collection = db.users  # Users collection
-movies_collection = db.movies  # Movies collection
+movies_collection = db.Movie  # Movies collection
 
 # User Authentication Functions
 def hash_password(password):
