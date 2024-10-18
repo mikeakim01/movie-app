@@ -123,7 +123,7 @@ def main_app():
 
         # Embed video without download option
         video_html = f"""
-        <video width="600" controls>
+        <video width="600"  controls controlsList="nodownload>
             <source src="{selected_movie['videoUrl']}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
