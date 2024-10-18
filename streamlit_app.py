@@ -63,6 +63,11 @@ def login_page():
 # Main App Content (Only for Logged-in Users)
 def main_app():
     st.title("Welcome to Bongoflix")
+
+    # Display the logged-in username
+    if "username" in st.session_state:
+        st.markdown(f"<h5 style='text-align: left;'>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
+    
     st.write("Enjoy the best movie streaming experience.")
 
     # Fetch and display movies from MongoDB
