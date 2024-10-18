@@ -63,10 +63,15 @@ def login_page():
 # Main App Content (Only for Logged-in Users)
 def main_app():
     st.title("Welcome to Bongoflix")
-
-    # Display the logged-in username
-    if "username" in st.session_state:
-        st.markdown(f"<h5 style='text-align: left;'>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
+    
+    # Sidebar for username and logout button
+    with st.sidebar:
+        if "username" in st.session_state:
+            st.markdown(f"<h5 style='text-align: left;'>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
+            if st.button("Logout"):
+                st.session_state.logged_in = False
+                st.session_state.username = None
+                st.success("Logged out successfully")
     
     st.write("Enjoy the best movie streaming experience.")
 
@@ -81,46 +86,9 @@ def main_app():
         st.write(f"**Description:** {movie['description']}")
         st.write(f"**Release Year:** {movie['release_year']}")
         st.write("---")  # Separator between movies
-    
-    if st.button("Logout"):
-        st.session_state.logged_in = False
-        st.session_state.username = None
-        st.success("Logged out successfully")
-
-# Background Video Styling using HTML
-def set_background_video():
-    video_html = """
-    <style>
-    .stApp {
-        background: transparent;
-    }
-    video {
-        position: fixed;
-        top: 0;
-        left: 0;
-        min-width: 100%;
-        min-height: 100%;
-        object-fit: cover;
-        z-index: -1;
-        filter: brightness(50%);
-        pointer-events: none;  /* Disable video interaction */
-    }
-    body {
-        -webkit-user-select: none;  /* Disable text selection */
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-    </style>
-    <video autoplay muted loop playsinline>
-        <source src="hero.mp4" type="video/mp4">
-    </video>
-    """
-    st.markdown(video_html, unsafe_allow_html=True)
 
 # Run the App Logic
 if __name__ == "__main__":
-    set_background_video()  # Set the video background
     if st.session_state.logged_in:
         main_app()
     else:
