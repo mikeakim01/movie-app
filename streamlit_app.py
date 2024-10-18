@@ -90,7 +90,10 @@ def main_app():
             for movie in movies:
                 st.write(f"**Title:** {movie['title']}")
                 st.write(f"**Description:** {movie['description']}")
-                st.write(f"**Release Year:** {movie['release_year']}")
+                st.write(f"**Genre:** {movie['genre']}")
+                st.write(f"**Duration:** {movie['duration']}")
+                st.image(movie['thumbnailUrl'], caption=movie['title'])
+                st.video(movie['videoUrl'])  # Display video
                 st.write("---")  # Separator between movies
                 
     except Exception as e:
