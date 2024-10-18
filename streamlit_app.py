@@ -21,12 +21,12 @@ def authenticate_user(username, password):
         return True
     return False
 
-def register_user(username, password):
+def register_user(username, password, email, phone):
     if users_collection.find_one({"username": username}):
         st.warning("Username already taken!")
         return False
     hashed_pw = hash_password(password)
-    users_collection.insert_one({"username": username, "password": hashed_pw})
+    users_collection.insert_one({"username": username, "password": hashed_pw, "email": email, "phone": phone})
     st.success("User registered successfully!")
     return True
 
@@ -55,10 +55,17 @@ def login_page():
     elif choice == "Register":
         st.subheader("Register for Bongoflix")
         username = st.text_input("Choose a Username")
+        email = st.text_input("Email")
+        phone = st.text_input("Phone Number")
         password = st.text_input("Choose a Password", type="password")
+        confirm_password = st.text_input("Re-enter Password", type="password")
+        
         if st.button("Register"):
-            if register_user(username, password):
-                st.success("Registration successful! Please login.")
+            if password != confirm_password:
+                st.warning("Passwords do not match!")
+            else:
+                if register_user(username, password, email, phone):
+                    st.success("Registration successful! Please login.")
 
 # Main App Content (Only for Logged-in Users)
 def main_app():
@@ -89,6 +96,11 @@ def main_app():
             # Display each movie
             for movie in movies:
                 st.write(f"**Title:** {movie['title']}")
+                st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
+                st.write(f"**Description:** {movie['description']}")
+                st.write(f"**Genre:** {movie['genre']}")
+                st.write(f"**Duration:** {movie['duration']}")
+                st.video(movie['videoUrl'])  # Display movie video
                 
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
