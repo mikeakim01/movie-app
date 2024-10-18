@@ -6,8 +6,9 @@ import bcrypt
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
 db = client.cluster1  # Database
 users_collection = db.users  # Users collection
+movies_collection = db.movies  # Movies collection
 
-# User Authentication Function
+# User Authentication Functions
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
@@ -64,17 +65,22 @@ def main_app():
     st.title("Welcome to Bongoflix")
     st.write("Enjoy the best movie streaming experience.")
 
-    # Sample content (You can enhance with MongoDB movie collection)
+    # Fetch and display movies from MongoDB
     st.subheader("Featured Movies")
-    st.write("1. The Matrix")
-    st.write("2. Inception")
-    st.write("3. Interstellar")
+    
+    movies = movies_collection.find()  # Fetch all movies from the collection
+    
+    # Display each movie
+    for movie in movies:
+        st.write(f"**Title:** {movie['title']}")
+        st.write(f"**Description:** {movie['description']}")
+        st.write(f"**Release Year:** {movie['release_year']}")
+        st.write("---")  # Separator between movies
     
     if st.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = None
         st.success("Logged out successfully")
-
 
 # Background Video Styling using HTML
 def set_background_video():
