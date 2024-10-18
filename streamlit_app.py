@@ -1,90 +1,82 @@
 import streamlit as st
-from firebase_config import auth_pyrebase, auth
-import time
+from pymongo import MongoClient
+import bcrypt
 
-# Inject Custom CSS
-with open("style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# MongoDB setup (replace <password> and <dbname> with your credentials)
+client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster1.ylyymur.mongodb.net/cluster1")
+db = client.movie_app  # Database
+users_collection = db.users  # Users collection
 
-# Streamlit App Configuration
-st.set_page_config(page_title="Spotflix", layout="centered")
+# User Authentication Function
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-# Session State Management
-if 'logged_in' not in st.session_state:
+def check_password(hashed_password, user_password):
+    return bcrypt.checkpw(user_password.encode('utf-8'), hashed_password)
+
+def authenticate_user(username, password):
+    user = users_collection.find_one({"username": username})
+    if user and check_password(user["password"], password):
+        return True
+    return False
+
+def register_user(username, password):
+    if users_collection.find_one({"username": username}):
+        st.warning("Username already taken!")
+        return False
+    hashed_pw = hash_password(password)
+    users_collection.insert_one({"username": username, "password": hashed_pw})
+    st.success("User registered successfully!")
+    return True
+
+# Secure Login State Management
+if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-    st.session_state.user = None
 
-def login(email, password):
-    try:
-        user = auth_pyrebase.sign_in_with_email_and_password(email, password)
-        if not user['emailVerified']:
-            st.warning("Please verify your email before logging in.")
-            return
-        st.session_state.logged_in = True
-        st.session_state.user = user
-        st.success("Login successful!")
-    except Exception as e:
-        st.error(f"Login failed: {e}")
-
-def logout():
-    st.session_state.logged_in = False
-    st.session_state.user = None
-
-def sign_up(email, password):
-    try:
-        user = auth_pyrebase.create_user_with_email_and_password(email, password)
-        auth_pyrebase.send_email_verification(user['idToken'])
-        st.success("Sign-up successful! Please verify your email.")
-    except Exception as e:
-        st.error(f"Signup failed: {e}")
-
-def send_password_reset(email):
-    try:
-        auth_pyrebase.send_password_reset_email(email)
-        st.success("Password reset email sent. Check your inbox.")
-    except Exception as e:
-        st.error(f"Failed to send reset email: {e}")
-
-def display_trailers():
-    st.header("Available Trailers")
-    st.video("https://www.youtube.com/watch?v=abc")
-
-def display_subscription_content():
-    st.header("Full Episodes")
-    st.video("https://www.youtube.com/watch?v=xyz")
-
-# UI Logic
-st.title("🎬 Welcome to Spotflix")
-
-if not st.session_state.logged_in:
-    st.subheader("Log in to access content")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
+# Login / Registration Screen
+def login_page():
+    st.title("Spotflix Login")
+    choice = st.sidebar.selectbox("Login or Register", ["Login", "Register"])
+    
+    if choice == "Login":
+        st.subheader("Login to Spotflix")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        
         if st.button("Login"):
-            login(email, password)
-    with col2:
-        if st.button("Google Sign-In"):
-            st.info("For now, use Email and Password.")
-    with col3:
-        if st.button("Forgot Password?"):
-            send_password_reset(email)
+            if authenticate_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success(f"Welcome {username}!")
+            else:
+                st.error("Invalid username or password")
 
-    st.write("Don't have an account?")
-    if st.button("Sign Up"):
-        sign_up(email, password)
+    elif choice == "Register":
+        st.subheader("Register for Spotflix")
+        username = st.text_input("Choose a Username")
+        password = st.text_input("Choose a Password", type="password")
+        if st.button("Register"):
+            if register_user(username, password):
+                st.success("Registration successful! Please login.")
 
+# Main App Content (Only for Logged-in Users)
+def main_app():
+    st.title("Welcome to Spotflix")
+    st.write("Enjoy the best movie streaming experience.")
+
+    # Sample content (You can enhance with MongoDB movie collection)
+    st.subheader("Featured Movies")
+    st.write("1. The Matrix")
+    st.write("2. Inception")
+    st.write("3. Interstellar")
+    
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = None
+        st.success("Logged out successfully")
+
+# Run the App Logic
+if st.session_state.logged_in:
+    main_app()
 else:
-    st.sidebar.button("Logout", on_click=logout, key="logout", 
-                      use_container_width=True, css_class="sidebar-button")
-
-    # Display Content
-    if st.sidebar.button("View Trailers", key="trailers", 
-                         use_container_width=True, css_class="sidebar-button"):
-        display_trailers()
-
-    if st.sidebar.button("View Full Episodes (Subscription Required)", key="episodes", 
-                         use_container_width=True, css_class="sidebar-button"):
-        display_subscription_content()
+    login_page()
