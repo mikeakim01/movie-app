@@ -98,12 +98,39 @@ def main_app():
             
             for i, movie in enumerate(movies):
                 with cols[i % 3]:  # Display movie in the appropriate column
+                    # Create a button with a uniform size
+                    if st.button(f"{movie['title']}", key=movie['_id']):
+                        st.session_state.selected_movie = movie  # Store selected movie in session state
+                        st.experimental_rerun()  # Rerun the app to show the selected movie
+
                     st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
-                    st.write(f"**Title:** {movie['title']}")           
+                    st.write(f"**Title:** {movie['title']}")
                     
-                
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
+
+    # Display selected movie details
+    if "selected_movie" in st.session_state:
+        selected_movie = st.session_state.selected_movie
+        st.subheader("Selected Movie")
+        st.image(selected_movie['thumbnailUrl'], width=200)
+        st.write(f"**Title:** {selected_movie['title']}")
+        st.write(f"**Description:** {selected_movie['description']}")
+        st.write(f"**Genre:** {selected_movie['genre']}")
+        st.write(f"**Duration:** {selected_movie['duration']}")
+
+        # Embed video without download option
+        video_html = f"""
+        <video width="600" controls>
+            <source src="{selected_movie['videoUrl']}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        """
+        st.components.v1.html(video_html, height=400)  # Use components to display video without download option
+        
+        if st.button("Back to Movie List"):
+            del st.session_state.selected_movie  # Remove selected movie from session state
+            st.experimental_rerun()  # Rerun the app to show the movie list
 
 # Run the App Logic
 if __name__ == "__main__":
