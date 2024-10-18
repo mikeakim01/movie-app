@@ -101,7 +101,9 @@ def main_app():
                     # Create a button with a uniform size
                     if st.button(f"{movie['title']}", key=movie['_id']):
                         st.session_state.selected_movie = movie  # Store selected movie in session state
-                        st.experimental_rerun()  # Rerun the app to show the selected movie
+                        # Instead of rerun, we just toggle the view
+                        st.experimental_set_query_params(selected_movie=movie['_id'])  # Save the selected movie ID to query params
+                        st.session_state.selected_movie = movie
 
                     st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
                     st.write(f"**Title:** {movie['title']}")
@@ -110,7 +112,7 @@ def main_app():
         st.error(f"Error fetching movies: {e}")
 
     # Display selected movie details
-    if "selected_movie" in st.session_state:
+    if 'selected_movie' in st.session_state:
         selected_movie = st.session_state.selected_movie
         st.subheader("Selected Movie")
         st.image(selected_movie['thumbnailUrl'], width=200)
@@ -130,7 +132,7 @@ def main_app():
         
         if st.button("Back to Movie List"):
             del st.session_state.selected_movie  # Remove selected movie from session state
-            st.experimental_rerun()  # Rerun the app to show the movie list
+            st.experimental_set_query_params()  # Clear query parameters to reset the state
 
 # Run the App Logic
 if __name__ == "__main__":
