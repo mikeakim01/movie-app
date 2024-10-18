@@ -1,2 +1,2 @@
-pyrebase4
-firebase-admin
+pymongo
+bycrpt
