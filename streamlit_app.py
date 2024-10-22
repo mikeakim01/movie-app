@@ -35,7 +35,7 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 def login_page():
-    st.title("Bongoflix Login")
+    st.title("Bongoflix")
     choice = st.sidebar.selectbox("Login or Register", ["Login", "Register"])
     
     if choice == "Login":
