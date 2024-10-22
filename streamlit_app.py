@@ -1,8 +1,9 @@
+
 import streamlit as st
 from pymongo import MongoClient
 import bcrypt
 
-# MongoDB connection setup
+
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster0.ylyymur.mongodb.net/cluster0")
 db = client.cluster0  # Database
 users_collection = db.users  # Users collection
@@ -30,26 +31,24 @@ def register_user(username, password, email, phone):
     st.success("User registered successfully!")
     return True
 
-# Initialize session state variables
+# Secure Login State Management
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "username" not in st.session_state:
-    st.session_state.username = None
 
 def login_page():
-    st.title("Bongoflix")
+    st.title("Bongoflix Login")
     choice = st.sidebar.selectbox("Login or Register", ["Login", "Register"])
-
+    
     if choice == "Login":
         st.subheader("Login to Bongoflix")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
-
-        if st.button("Login"):
+        
+        # Add a unique key to the Login button
+        if st.button("Login", key="login_button"):
             if authenticate_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.username = username
-                st.experimental_set_query_params(logged_in="1")  # Trigger UI update
                 st.success(f"Welcome {username}!")
             else:
                 st.error("Invalid username or password")
@@ -61,49 +60,60 @@ def login_page():
         phone = st.text_input("Phone Number")
         password = st.text_input("Choose a Password", type="password")
         confirm_password = st.text_input("Re-enter Password", type="password")
-
-        if st.button("Register"):
+        
+        # Add a unique key to the Register button
+        if st.button("Register", key="register_button"):
             if password != confirm_password:
                 st.warning("Passwords do not match!")
             else:
                 if register_user(username, password, email, phone):
                     st.success("Registration successful! Please login.")
 
+# Main App Content (Only for Logged-in Users)
 def main_app():
     st.title("Welcome to Bongoflix")
-
+    
+    # Sidebar for username and logout button
     with st.sidebar:
         if "username" in st.session_state:
-            st.markdown(f"<h5>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='text-align: left;'>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
             if st.button("Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
-                st.experimental_set_query_params(logged_in="0")  # Clear query params
                 st.success("Logged out successfully")
-
+    
     st.write("Enjoy the best movie streaming experience.")
+
+    # Fetch and display movies from MongoDB
     st.subheader("Featured Movies")
-
+    
+    # Fetch all movies from the collection
     try:
-        movies = list(movies_collection.find())
-
+        movies = list(movies_collection.find())  # Convert the cursor to a list
+        
+        # Check if movies are present
         if not movies:
             st.write("No movies found in the database.")
         else:
-            cols = st.columns(3)
-
+            # Create columns for movie tiles
+            cols = st.columns(3)  # Adjust the number of columns as needed
+            
             for i, movie in enumerate(movies):
-                with cols[i % 3]:
+                with cols[i % 3]:  # Display movie in the appropriate column
+                    # Create a button with a uniform size
                     if st.button(f"{movie['title']}", key=movie['_id']):
+                        st.session_state.selected_movie = movie  # Store selected movie in session state
+                        # Instead of rerun, we just toggle the view
+                        st.experimental_set_query_params(selected_movie=movie['_id'])  # Save the selected movie ID to query params
                         st.session_state.selected_movie = movie
-                        st.experimental_set_query_params(selected_movie=movie['_id'])
 
-                    st.image(movie['thumbnailUrl'], width=150)
+                    st.image(movie['thumbnailUrl'], width=150)  # Display movie thumbnail
                     st.write(f"**Title:** {movie['title']}")
-
+                    
     except Exception as e:
         st.error(f"Error fetching movies: {e}")
 
+    # Display selected movie details
     if 'selected_movie' in st.session_state:
         selected_movie = st.session_state.selected_movie
         st.subheader("Selected Movie")
@@ -113,18 +123,20 @@ def main_app():
         st.write(f"**Genre:** {selected_movie['genre']}")
         st.write(f"**Duration:** {selected_movie['duration']}")
 
+        # Embed video without download option
         video_html = f"""
         <video width="600" controls controlsList="nodownload">
             <source src="{selected_movie['videoUrl']}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         """
-        st.components.v1.html(video_html, height=400)
-
+        st.components.v1.html(video_html, height=400)  # Use components to display video without download option
+        
         if st.button("Back to Movie List"):
-            del st.session_state.selected_movie
-            st.experimental_set_query_params()  # Clear query params
+            del st.session_state.selected_movie  # Remove selected movie from session state
+            st.experimental_set_query_params()  # Clear query parameters to reset the state
 
+# Run the App Logic
 if __name__ == "__main__":
     if st.session_state.logged_in:
         main_app()
