@@ -35,8 +35,6 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
     st.session_state.username = None
-if "rerun" not in st.session_state:
-    st.session_state.rerun = False  # New flag to manage rerun
 
 def login_page():
     st.title("Bongoflix")
@@ -47,14 +45,12 @@ def login_page():
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
-        if st.button("Login", key="login_button"):
+        if st.button("Login"):
             if authenticate_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.username = username
+                st.experimental_set_query_params(logged_in="1")  # Trigger UI update
                 st.success(f"Welcome {username}!")
-                
-                # Use the rerun flag to trigger the refresh
-                st.session_state.rerun = True
             else:
                 st.error("Invalid username or password")
 
@@ -66,14 +62,13 @@ def login_page():
         password = st.text_input("Choose a Password", type="password")
         confirm_password = st.text_input("Re-enter Password", type="password")
 
-        if st.button("Register", key="register_button"):
+        if st.button("Register"):
             if password != confirm_password:
                 st.warning("Passwords do not match!")
             else:
                 if register_user(username, password, email, phone):
                     st.success("Registration successful! Please login.")
 
-# Main App Content (Only for Logged-in Users)
 def main_app():
     st.title("Welcome to Bongoflix")
 
@@ -83,8 +78,8 @@ def main_app():
             if st.button("Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
+                st.experimental_set_query_params(logged_in="0")  # Clear query params
                 st.success("Logged out successfully")
-                st.session_state.rerun = True  # Trigger a rerun for logout
 
     st.write("Enjoy the best movie streaming experience.")
     st.subheader("Featured Movies")
@@ -128,15 +123,9 @@ def main_app():
 
         if st.button("Back to Movie List"):
             del st.session_state.selected_movie
-            st.experimental_set_query_params()
+            st.experimental_set_query_params()  # Clear query params
 
-# Run the App Logic
 if __name__ == "__main__":
-    if st.session_state.rerun:
-        # Reset the rerun flag and refresh the app
-        st.session_state.rerun = False
-        st.experimental_rerun()
-    
     if st.session_state.logged_in:
         main_app()
     else:
