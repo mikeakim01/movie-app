@@ -2,7 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 import bcrypt
 
-# MongoDB setup (replace <password> and <dbname> with your credentials)
+
 client = MongoClient("mongodb+srv://mike:Bil5tDBBKWVZ4cvs@cluster0.ylyymur.mongodb.net/cluster0")
 db = client.cluster0  # Database
 users_collection = db.users  # Users collection
