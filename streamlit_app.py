@@ -8,51 +8,6 @@ db = client.cluster0  # Database
 users_collection = db.users  # Users collection
 movies_collection = db.Movie  # Movies collection
 
-# Inject Custom CSS for Responsive Design
-st.markdown(
-    """
-    <style>
-    /* General layout adjustments */
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-    
-    /* Increase font sizes for headers and buttons */
-    h1, h2, h3, h4 {
-        font-size: 1.5rem;
-    }
-    button {
-        font-size: 1.2rem;
-    }
-    .stTextInput > div > input {
-        font-size: 1.1rem;
-    }
-    .stButton > button {
-        padding: 10px 20px;
-        border-radius: 5px;
-    }
-
-    /* Improve responsiveness for smaller screens */
-    @media (max-width: 768px) {
-        .block-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        h1, h2, h3 {
-            font-size: 1.2rem;
-        }
-        button {
-            font-size: 1rem;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 # User Authentication Functions
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -81,10 +36,10 @@ if "logged_in" not in st.session_state:
 
 def login_page():
     st.title("Bongoflix Login")
-
+    
     # Display buttons side-by-side
     col1, col2 = st.columns(2)
-
+    
     with col1:
         login_button = st.button("Login", key="login_button")
     with col2:
@@ -94,7 +49,7 @@ def login_page():
         st.subheader("Login to Bongoflix")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
-
+        
         if st.button("Login", key="confirm_login"):
             if authenticate_user(username, password):
                 st.session_state.logged_in = True
@@ -110,7 +65,7 @@ def login_page():
         phone = st.text_input("Phone Number")
         password = st.text_input("Choose a Password", type="password")
         confirm_password = st.text_input("Re-enter Password", type="password")
-
+        
         if st.button("Register", key="confirm_register"):
             if password != confirm_password:
                 st.warning("Passwords do not match!")
@@ -121,7 +76,7 @@ def login_page():
 # Main App Content (Only for Logged-in Users)
 def main_app():
     st.title("Welcome to Bongoflix")
-
+    
     # Top navigation bar for username and logout button
     st.write(f"Logged in as: **{st.session_state.username}**")
     if st.button("Logout"):
@@ -139,7 +94,7 @@ def main_app():
             st.write("No movies found in the database.")
         else:
             cols = st.columns(3)  # Create columns for movie tiles
-
+            
             for i, movie in enumerate(movies):
                 with cols[i % 3]:
                     if st.button(f"{movie['title']}", key=movie['_id']):
@@ -169,7 +124,7 @@ def main_app():
         </video>
         """
         st.components.v1.html(video_html, height=400)
-
+        
         if st.button("Back to Movie List"):
             del st.session_state.selected_movie
             st.experimental_set_query_params()
