@@ -30,9 +30,13 @@ def register_user(username, password, email, phone):
     st.success("User registered successfully!")
     return True
 
-# Secure Login State Management
+# Initialize session state variables
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "rerun" not in st.session_state:
+    st.session_state.rerun = False  # New flag to manage rerun
 
 def login_page():
     st.title("Bongoflix")
@@ -48,9 +52,9 @@ def login_page():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.success(f"Welcome {username}!")
-
-                # Rerun the app to reflect the login state
-                st.experimental_rerun()
+                
+                # Use the rerun flag to trigger the refresh
+                st.session_state.rerun = True
             else:
                 st.error("Invalid username or password")
 
@@ -73,7 +77,6 @@ def login_page():
 def main_app():
     st.title("Welcome to Bongoflix")
 
-    # Sidebar for username and logout button
     with st.sidebar:
         if "username" in st.session_state:
             st.markdown(f"<h5>Logged in as: {st.session_state.username}</h5>", unsafe_allow_html=True)
@@ -81,21 +84,18 @@ def main_app():
                 st.session_state.logged_in = False
                 st.session_state.username = None
                 st.success("Logged out successfully")
-
-                # Rerun the app to update the state
-                st.experimental_rerun()
+                st.session_state.rerun = True  # Trigger a rerun for logout
 
     st.write("Enjoy the best movie streaming experience.")
     st.subheader("Featured Movies")
 
-    # Fetch and display movies from MongoDB
     try:
         movies = list(movies_collection.find())
 
         if not movies:
             st.write("No movies found in the database.")
         else:
-            cols = st.columns(3)  # Create columns for movie tiles
+            cols = st.columns(3)
 
             for i, movie in enumerate(movies):
                 with cols[i % 3]:
@@ -132,6 +132,11 @@ def main_app():
 
 # Run the App Logic
 if __name__ == "__main__":
+    if st.session_state.rerun:
+        # Reset the rerun flag and refresh the app
+        st.session_state.rerun = False
+        st.experimental_rerun()
+    
     if st.session_state.logged_in:
         main_app()
     else:
